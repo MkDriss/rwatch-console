@@ -1,0 +1,29 @@
+name: rwatch-console
+
+services:
+  backend:
+    build: ./backend
+    # Runs a minimal init as PID 1 so Node receives stop signals properly.
+    init: true
+    restart: unless-stopped
+    environment:
+      # Compose refuses to start if the token is missing or empty.
+      INGEST_TOKEN: ${INGEST_TOKEN:?Set INGEST_TOKEN in .env (see .env.example)}
+      DB_PATH: /data/alerts.db
+    volumes:
+      - alerts-data:/data
+    # No "ports" on purpose: the backend is only reachable through nginx,
+    # on the internal Compose network.
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    # Published on ONE host interface only (127.0.0.1 by default).
+    # On the Pi, .env sets 192.168.8.182 (eth0, router side), never wlan0.
+    ports:
+      - "${CONSOLE_BIND_IP:-127.0.0.1}:${CONSOLE_PORT:-8080}:80"
+
+volumes:
+  alerts-data:
