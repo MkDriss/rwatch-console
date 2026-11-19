@@ -1,0 +1,58 @@
+<dialog #dialog aria-labelledby="alert-detail-title" (close)="closed.emit()">
+  @let a = alert();
+  <div class="head">
+    <h2 id="alert-detail-title">Détail de l'alerte</h2>
+    <button type="button" class="close" (click)="close()">Fermer</button>
+  </div>
+
+  <dl class="fields">
+    <dt>Sévérité</dt>
+    <dd>
+      <app-severity-badge [severity]="a.severity" /> <span class="mono raw">{{ a.severity }}</span>
+    </dd>
+
+    <dt>Horodatage (UTC)</dt>
+    <dd class="mono">
+      <time [attr.datetime]="a.timestamp">{{ a.timestamp }}</time>
+    </dd>
+
+    <dt>Type</dt>
+    <dd>{{ a.type }}</dd>
+
+    <dt>Règle</dt>
+    <dd class="mono">{{ a.rule_id }}</dd>
+
+    <dt>IP source</dt>
+    <dd class="mono">
+      @if (a.source_ip) {
+        {{ a.source_ip }}
+      } @else {
+        <span class="unknown">inconnue</span>
+      }
+    </dd>
+
+    <dt>MAC source</dt>
+    <dd class="mono">
+      @if (a.source_mac) {
+        {{ a.source_mac }}
+      } @else {
+        <span class="unknown">inconnue</span>
+      }
+    </dd>
+
+    <dt>Cible</dt>
+    <dd class="mono">
+      @if (a.target) {
+        {{ a.target }}
+      } @else {
+        <span class="unknown">inconnue</span>
+      }
+    </dd>
+
+    <dt>Détails</dt>
+    <dd class="details">{{ a.details }}</dd>
+  </dl>
+
+  <h3>JSON au format du contrat rwatch</h3>
+  <pre class="json">{{ json() }}</pre>
+</dialog>

@@ -1,0 +1,22 @@
+.shell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 3rem;
+  padding: 0 1rem;
+  background: var(--shell-bg);
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.shell-name {
+  font-weight: 600;
+  color: var(--shell-text);
+}
+
+.shell-context {
+  color: var(--shell-text-secondary);
+}
+
+.content {
+  padding: 1.5rem 1rem;
+}

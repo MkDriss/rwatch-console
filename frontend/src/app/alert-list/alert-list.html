@@ -1,0 +1,83 @@
+<div class="page-head">
+  <h1>Alertes</h1>
+  @if (alerts(); as list) {
+    <p class="summary">{{ summary(list.length) }}, de la plus récente à la plus ancienne</p>
+  }
+</div>
+
+@if (loadFailed()) {
+  <p class="notice notice-error" role="alert">
+    Les alertes n'ont pas pu être chargées : le backend ne répond pas. Vérifiez que le conteneur
+    backend tourne avec <code>docker compose ps</code>.
+  </p>
+} @else if (alerts(); as list) {
+  @if (list.length === 0) {
+    <p class="notice">
+      Aucune alerte reçue pour l'instant. Pour en afficher sans rwatch, rejouez le jeu de test avec
+      <code>scripts/replay-alerts.sh</code>.
+    </p>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Sévérité</th>
+            <th scope="col">Heure (UTC)</th>
+            <th scope="col">Type</th>
+            <th scope="col">Règle</th>
+            <th scope="col">IP source</th>
+            <th scope="col">MAC source</th>
+            <th scope="col">Cible</th>
+            <th scope="col">Détails</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (alert of list; track alert.id) {
+            <tr [class]="severityClass(alert.severity)">
+              <td>
+                <app-severity-badge [severity]="alert.severity" />
+              </td>
+              <td class="mono nowrap">
+                <time [attr.datetime]="alert.timestamp">{{ displayTime(alert.timestamp) }}</time>
+              </td>
+              <td>
+                <button type="button" class="link" (click)="selected.set(alert)">
+                  <span class="visually-hidden">Détail de l'alerte </span>{{ alert.type }}
+                </button>
+              </td>
+              <td class="mono nowrap">{{ alert.rule_id }}</td>
+              <td class="mono nowrap">
+                @if (alert.source_ip) {
+                  {{ alert.source_ip }}
+                } @else {
+                  <span class="unknown">inconnue</span>
+                }
+              </td>
+              <td class="mono nowrap">
+                @if (alert.source_mac) {
+                  {{ alert.source_mac }}
+                } @else {
+                  <span class="unknown">inconnue</span>
+                }
+              </td>
+              <td class="mono nowrap">
+                @if (alert.target) {
+                  {{ alert.target }}
+                } @else {
+                  <span class="unknown">inconnue</span>
+                }
+              </td>
+              <td class="details" [title]="alert.details">{{ alert.details }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (selected(); as current) {
+      <app-alert-detail [alert]="current" (closed)="selected.set(null)" />
+    }
+  }
+} @else {
+  <p class="notice">Chargement des alertes…</p>
+}

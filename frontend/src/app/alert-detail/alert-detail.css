@@ -1,0 +1,104 @@
+/* Side panel on the right, full height (pattern of Elastic's alert flyout). */
+dialog {
+  inset: 0 0 0 auto;
+  margin: 0;
+  width: min(36rem, 100%);
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0 1.5rem 1.5rem;
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--surface);
+  border: none;
+  border-left: 1px solid var(--border);
+}
+
+dialog::backdrop {
+  background: rgb(22 22 22 / 50%);
+}
+
+.head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.close {
+  padding: 0.5rem 1rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--page);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.625rem 1.5rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+dt {
+  color: var(--text-secondary);
+}
+
+dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.raw {
+  margin-left: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.unknown {
+  font-family: var(--font-sans);
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+/* Full text, line breaks kept, still plain text (never HTML). */
+.details {
+  white-space: pre-wrap;
+}
+
+h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.json {
+  margin: 0;
+  padding: 1rem;
+  /* Long strings (details) wrap instead of scrolling sideways. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: var(--page);
+  border: 1px solid var(--border);
+}

@@ -3,8 +3,8 @@ import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type { App } from 'supertest/types.js';
-import { AppModule } from '../../app.module.js';
-import { AlertsRepository } from '../alerts/alerts.repository.js';
+import { AppModule } from '../../../src/app.module.js';
+import { AlertsRepository } from './alerts.repository.js';
 
 const TOKEN = 'test-token';
 // The four real alerts produced by rwatch (one with source_ip: null).
@@ -61,5 +61,23 @@ describe('POST /api/alerts', () => {
     for (const alert of fixtures) await post(alert, TOKEN).expect(201);
     for (const alert of fixtures) await post(alert, TOKEN).expect(200);
     expect(app.get(AlertsRepository).count()).toBe(4);
+  });
+
+  it('GET lists by event time, most recent first, keeping null and absent apart', async () => {
+    for (const alert of fixtures) await post(alert, TOKEN).expect(201);
+    const { source_mac: _omitted, ...withoutMac } = fixtures[0];
+    await post(
+      { ...withoutMac, timestamp: '2026-01-01T00:00:01Z' },
+      TOKEN,
+    ).expect(201);
+
+    const res = await request(app.getHttpServer())
+      .get('/api/alerts')
+      .expect(200);
+    const list = res.body as Record<string, unknown>[];
+    const timestamps = list.map((a) => a.timestamp as string);
+    expect(timestamps).toEqual([...timestamps].sort().reverse());
+    expect(list.find((a) => a.source_ip === null)).toBeDefined();
+    expect(list.at(-1)).not.toHaveProperty('source_mac');
   });
 });

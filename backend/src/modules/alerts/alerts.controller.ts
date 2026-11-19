@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Post,
   Res,
@@ -9,7 +10,7 @@ import {
 import type { Response } from 'express';
 import type { Alert } from './alert.js';
 import { AlertValidationPipe } from './alert-validation.pipe.js';
-import { AlertsRepository } from './alerts.repository.js';
+import { AlertsRepository, type StoredAlert } from './alerts.repository.js';
 import { BearerTokenGuard } from '../../guards/auth-guard/bearer-token.guard.js';
 
 @Controller('alerts')
@@ -27,5 +28,12 @@ export class AlertsController {
     const isNew = this.repository.insert(alert);
     // 201 = stored, 200 = duplicate already stored (rwatch retries).
     res.status(isNew ? HttpStatus.CREATED : HttpStatus.OK);
+  }
+
+  // Read API for the frontend. No token here: the ingestion token must never
+  // reach the browser. The console is only published on the Pi's eth0.
+  @Get()
+  list(): StoredAlert[] {
+    return this.repository.findAll();
   }
 }

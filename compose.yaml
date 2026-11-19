@@ -11,7 +11,7 @@ services:
       INGEST_TOKEN: ${INGEST_TOKEN:?Set INGEST_TOKEN in .env (see .env.example)}
       DB_PATH: /data/alerts.db
     volumes:
-      - alerts-data:/data
+      - alerts-data:/data:z
     # No "ports" on purpose: the backend is only reachable through nginx,
     # on the internal Compose network.
 

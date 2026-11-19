@@ -1,1 +1,98 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+
+/*
+ * Tokens taken from IBM's Carbon palette (Gray 10 light theme, with a
+ * Gray 100 shell header) and its support colours for severities.
+ */
+:root {
+  --page: #f4f4f4; /* Gray 10 */
+  --surface: #ffffff; /* White */
+  --text: #161616; /* Gray 100 */
+  --text-secondary: #525252; /* Gray 70 */
+  --border: #e0e0e0; /* Gray 20 */
+  --border-strong: #8d8d8d; /* Gray 50 */
+  --accent: #0f62fe; /* Blue 60: interactive elements only */
+  --link: #0f62fe; /* $link-primary, Blue 60 */
+  --link-hover: #0043ce; /* $link-primary-hover, Blue 70 */
+
+  --shell-bg: #161616; /* Gray 100 */
+  --shell-border: #393939; /* Gray 80 */
+  --shell-text: #f4f4f4; /* Gray 10 */
+  --shell-text-secondary: #c6c6c6; /* Gray 30 */
+
+  --sev-critical: #da1e28; /* Red 60 */
+  --sev-high: #ff832b; /* Orange 40 */
+  --sev-medium: #f1c21b; /* Yellow 30 */
+
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: 100%;
+  line-height: 1.4;
+  color: var(--text);
+  background: var(--page);
+}
+
+body {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+code {
+  font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/*
+ * Severity colours, shared by the badge and the row band.
+ * Low is close to normal: outline only, as in alarm-management practice.
+ */
+.sev-critical {
+  --sev-fill: var(--sev-critical);
+  --sev-line: var(--sev-critical);
+  --sev-text: #ffffff;
+}
+
+.sev-high {
+  --sev-fill: var(--sev-high);
+  --sev-line: var(--sev-high);
+  --sev-text: var(--text);
+}
+
+.sev-medium {
+  --sev-fill: var(--sev-medium);
+  --sev-line: var(--sev-medium);
+  --sev-text: var(--text);
+}
+
+.sev-low,
+.sev-unknown {
+  --sev-fill: var(--surface);
+  --sev-line: var(--border-strong);
+  --sev-text: var(--text);
+}
+
+/* Read by screen readers, not shown. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

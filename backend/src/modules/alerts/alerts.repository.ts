@@ -1,7 +1,38 @@
 import { createHash } from 'node:crypto';
 import { DatabaseSync, type StatementSync } from 'node:sqlite';
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import type { Alert } from './alert.js';
+import type { Alert, Severity } from './alert.js';
+
+/** An alert as stored by the console: the contract fields plus a local id. */
+export type StoredAlert = Alert & { id: number };
+
+interface AlertRow {
+  id: number;
+  timestamp: string;
+  type: string;
+  severity: Severity;
+  source_ip: string | null;
+  source_mac: string | null;
+  target: string | null;
+  details: string;
+  rule_id: string;
+}
+
+// Back to the contract's two ways of saying "unknown": source_ip stays null,
+// source_mac and target are omitted.
+function toStoredAlert(row: AlertRow): StoredAlert {
+  return {
+    id: row.id,
+    timestamp: row.timestamp,
+    type: row.type,
+    severity: row.severity,
+    source_ip: row.source_ip,
+    ...(row.source_mac !== null && { source_mac: row.source_mac }),
+    ...(row.target !== null && { target: row.target }),
+    details: row.details,
+    rule_id: row.rule_id,
+  };
+}
 
 @Injectable()
 export class AlertsRepository implements OnModuleDestroy {
@@ -52,6 +83,21 @@ export class AlertsRepository implements OnModuleDestroy {
       alert.rule_id,
     );
     return Number(changes) === 1;
+  }
+
+  /**
+   * Most recent first, by event time (capture time), not arrival time.
+   * Sorting the TEXT column is correct because every timestamp has the exact
+   * same RFC 3339 shape (UTC, "Z", no fractional seconds); id breaks ties.
+   */
+  findAll(): StoredAlert[] {
+    const rows = this.db
+      .prepare(
+        `SELECT id, timestamp, type, severity, source_ip, source_mac, target, details, rule_id
+         FROM alerts ORDER BY timestamp DESC, id DESC`,
+      )
+      .all() as unknown as AlertRow[];
+    return rows.map(toStoredAlert);
   }
 
   count(): number {
